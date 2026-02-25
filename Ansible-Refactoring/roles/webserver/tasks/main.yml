@@ -1,0 +1,26 @@
+---
+- name: Install Apache
+  yum:
+    name: httpd
+    state: present
+
+- name: Install Git
+  yum:
+    name: git
+    state: present
+
+- name: Clone Tooling Repository
+  git:
+    repo: https://github.com/Ngumonelson123/tooling
+    dest: /var/www/html
+    force: yes
+
+- name: Disable default RHEL welcome page
+  command: mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.bak
+  ignore_errors: yes
+
+- name: Restart Apache
+  service:
+    name: httpd
+    state: restarted
+    enabled: yes

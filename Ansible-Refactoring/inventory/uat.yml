@@ -1,0 +1,8 @@
+all:
+  children:
+    uat_webservers:
+      hosts:
+        172.31.24.208:
+          ansible_user: ec2-user
+        172.31.20.105:
+          ansible_user: ec2-user

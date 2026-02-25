@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  author: Nelson
+  description: Webserver role for UAT deployment
+  license: MIT
+  min_ansible_version: 2.9

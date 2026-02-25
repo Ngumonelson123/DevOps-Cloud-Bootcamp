@@ -1,0 +1,10 @@
+---
+- name: Common configuration for all servers
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Remove Wireshark
+      yum:
+        name: wireshark
+        state: absent

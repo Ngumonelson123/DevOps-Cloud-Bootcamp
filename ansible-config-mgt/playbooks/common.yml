@@ -1,0 +1,25 @@
+---
+- name: Configure web servers
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Wireshark
+      apt:
+        name: wireshark
+        state: present
+
+    - name: Create a tools directory
+      file:
+        path: /opt/tools
+        state: directory
+        mode: '0755'
+
+    - name: Add a README file
+      copy:
+        dest: /opt/tools/README.txt
+        content: "This Ubuntu server is managed automatically via Jenkins + Ansible!"
+

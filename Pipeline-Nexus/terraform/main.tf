@@ -147,7 +147,7 @@ resource "aws_instance" "nginx_ci" {
   tags = { Name = "nginx-ci-server" }
 }
 
-# ---------- EC2 Instances — Dev Environment ----------
+# ---------- EC2 Instances — Dev Environment
 resource "aws_instance" "tooling" {
   ami                    = var.ami_id
   instance_type          = "t2.micro"

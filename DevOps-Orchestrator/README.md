@@ -14,7 +14,7 @@
 
 ### STEP 3 — Install and Configure SonarQube
 
-![SonarQube Quality Gate Passed](screenshots/sonarqube-passed.png)
+![SonarQube Quality Gate Passed](screenshots/sonarqube-first-passed.png)
 > php-todo project showing green Passed Quality Gate — last analysis March 21, 2026
 
 ![SonarQube First Passed](screenshots/sonarqube-first-passed.png)

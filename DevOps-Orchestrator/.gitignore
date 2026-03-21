@@ -1,3 +1,6 @@
 DevOps-Orchestrator/ansible/
 *.pem
 DevOps-Orchestrator/ansible/
+**/.terraform/
+*.tfstate
+*.tfstate.backup

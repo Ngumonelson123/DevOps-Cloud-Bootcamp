@@ -1,4 +1,4 @@
-# Project 14 — CI/CD Pipeline with Jenkins, Ansible, Artifactory & SonarQube
+# DEVOPS ORCHESTRATOR PROJECT — CI/CD Pipeline with Terraform, Jenkins, Ansible, Artifactory & SonarQube
 
 ## Stack
 - **Jenkins** — CI/CD orchestration

@@ -34,9 +34,9 @@
 > Jenkins Configure System — JFrog instance configured, connection test shows "Found JFrog Artifactory 7.141.2"
 
 ![JFrog Artifact Details](screenshots/jfrog-artifact-details.png)
-> php-todo artifact in Artifactory — 7.76 MB, deployed by nelson@kewiscosacco.org
+> php-todo artifact in Artifactory — 7.76 MB, deployed by nelson@*********
 
-![JFrog Artifacts Page](screenshots/jfrog-artifacts-page.png)
+![JFrog Artifacts Page](screenshots/jfrog-artifact-details.png)
 > php-todo-local repository showing php-todo artifact with download link
 
 ---

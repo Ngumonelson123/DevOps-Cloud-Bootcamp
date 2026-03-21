@@ -1,0 +1,2 @@
+MAIN PROJECT REPO: https://github.com/Ngumonelson123/DevOps-Cloud-Bootcamp/tree/main/DevOps-Orchestrator
+ANSIBLE CONFIGURATION REPO: https://github.com/Ngumonelson123/ansible-configuration-mgt

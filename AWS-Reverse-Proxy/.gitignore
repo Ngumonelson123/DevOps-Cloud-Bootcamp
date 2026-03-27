@@ -1,0 +1,6 @@
+AWS-Reverse-Proxy/ansible/
+*.pem
+AWS-Reverse-Proxy/ansible/
+**/.terraform/
+*.tfstate
+*.tfstate.backup

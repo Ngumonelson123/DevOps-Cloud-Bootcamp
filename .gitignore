@@ -1,7 +1,7 @@
-ansible/
-.terraform/
 *.pem
 *.tfstate
 *.tfstate.backup
 tfplan
+**/.terraform/
+**/ansible/
 terraform.tfvars

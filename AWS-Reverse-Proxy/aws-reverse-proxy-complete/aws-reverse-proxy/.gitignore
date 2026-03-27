@@ -1,0 +1,19 @@
+# Terraform state & cache
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+
+# Sensitive variable files – NEVER commit these
+terraform.tfvars
+*.auto.tfvars
+secrets.tf
+
+# OS & editor noise
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/

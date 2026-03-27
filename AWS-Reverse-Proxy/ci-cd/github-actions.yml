@@ -1,0 +1,192 @@
+name: Deploy AWS Reverse Proxy Infrastructure
+
+on:
+  push:
+    branches:
+      - main        # full deploy
+      - develop     # plan only (no apply)
+  pull_request:
+    branches:
+      - main        # plan + post comment
+
+env:
+  TF_VERSION: "1.7.5"
+  AWS_REGION: "us-east-1"
+  WORKING_DIR: "./aws-reverse-proxy"   # adjust if repo root IS the project
+
+# ── Permissions for PR comments ───────────────────────────────
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  # ── Job 1: Terraform Validate & Plan ────────────────────────
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+        continue-on-error: true
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -no-color \
+            -var="db_password=${{ secrets.DB_PASSWORD }}" \
+            -var="db_username=${{ secrets.DB_USERNAME }}" \
+            -out=tfplan 2>&1 | tee plan_output.txt
+        continue-on-error: true
+
+      - name: Post plan to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('${{ env.WORKING_DIR }}/plan_output.txt', 'utf8');
+            const maxLen = 65000;
+            const truncated = plan.length > maxLen
+              ? plan.substring(0, maxLen) + '\n\n... [truncated]'
+              : plan;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## Terraform Plan\n\`\`\`hcl\n${truncated}\n\`\`\``
+            });
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ env.WORKING_DIR }}/tfplan
+          retention-days: 5
+
+  # ── Job 2: Terraform Apply (main branch only) ────────────────
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    environment:
+      name: production     # requires manual approval in GitHub
+
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ env.WORKING_DIR }}
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+
+      - name: Get outputs
+        id: outputs
+        run: |
+          echo "ext_alb=$(terraform output -raw external_alb_dns)" >> $GITHUB_OUTPUT
+          echo "wordpress=$(terraform output -raw wordpress_url)" >> $GITHUB_OUTPUT
+          echo "tooling=$(terraform output -raw tooling_url)" >> $GITHUB_OUTPUT
+
+      - name: Print deployment summary
+        run: |
+          echo "=========================================="
+          echo "  Deployment Complete!"
+          echo "=========================================="
+          echo "  WordPress : ${{ steps.outputs.outputs.wordpress }}"
+          echo "  Tooling   : ${{ steps.outputs.outputs.tooling }}"
+          echo "  ALB DNS   : ${{ steps.outputs.outputs.ext_alb }}"
+          echo "=========================================="
+
+  # ── Job 3: Run Ansible after Terraform apply ─────────────────
+  ansible-configure:
+    name: Ansible Configure
+    runs-on: ubuntu-latest
+    needs: terraform-apply
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          pip install ansible boto3 botocore
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION }}
+
+      - name: Write SSH private key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/keypair.pem
+          chmod 400 ~/.ssh/keypair.pem
+
+      - name: Run Ansible playbook
+        working-directory: ./aws-reverse-proxy/ansible
+        run: |
+          ansible-playbook playbooks/site.yml \
+            -i inventory/aws_ec2.yml \
+            --private-key ~/.ssh/keypair.pem \
+            -e "db_password=${{ secrets.DB_PASSWORD }}" \
+            -e "db_username=${{ secrets.DB_USERNAME }}"
+
+      - name: Run verification playbook
+        working-directory: ./aws-reverse-proxy/ansible
+        run: |
+          ansible-playbook playbooks/verify.yml \
+            -i inventory/aws_ec2.yml \
+            --private-key ~/.ssh/keypair.pem

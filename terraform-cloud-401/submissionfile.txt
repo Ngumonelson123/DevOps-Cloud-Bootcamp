@@ -1,0 +1,75 @@
+##############################################################
+# submissionfile.txt — StegHub Terraform 401
+# Fill in each section as you complete the steps
+##############################################################
+
+STUDENT NAME: Nelson Ngumo
+GITHUB USERNAME: Ngumonelson123
+TERRAFORM CLOUD ORG: (fill in)
+DATE SUBMITTED: (fill in)
+
+─────────────────────────────────────────────────────────────
+STEP 1 — Terraform Cloud Account & Organization
+─────────────────────────────────────────────────────────────
+Terraform Cloud Org URL: https://app.terraform.io/app/(YOUR_ORG_NAME)
+
+─────────────────────────────────────────────────────────────
+STEP 2 — GitHub Repository
+─────────────────────────────────────────────────────────────
+Repository URL: https://github.com/Ngumonelson123/terraform-cloud
+Branches created: main, dev, test, prod
+
+─────────────────────────────────────────────────────────────
+STEP 3 — Terraform Cloud Workspace
+─────────────────────────────────────────────────────────────
+Workspace Name: terraform-cloud-dev
+VCS Branch: dev
+Workflow Type: Version Control Workflow
+
+─────────────────────────────────────────────────────────────
+STEP 4 — Variables Configured
+─────────────────────────────────────────────────────────────
+Environment Variables set:
+  - AWS_ACCESS_KEY_ID        ✓
+  - AWS_SECRET_ACCESS_KEY    ✓ (sensitive)
+  - AWS_DEFAULT_REGION       ✓
+
+─────────────────────────────────────────────────────────────
+STEP 5 — Plan & Apply (Manual from Web Console)
+─────────────────────────────────────────────────────────────
+Run URL: https://app.terraform.io/app/(YOUR_ORG)/workspaces/terraform-cloud-dev/runs/(RUN_ID)
+Status: Applied successfully
+State Version: (fill in version number from UI)
+
+─────────────────────────────────────────────────────────────
+STEP 6 — Automated Plan (VCS Triggered)
+─────────────────────────────────────────────────────────────
+Trigger commit: (paste git commit SHA)
+Auto-plan triggered: Yes
+Apply: Confirmed manually
+
+─────────────────────────────────────────────────────────────
+STEP 7 — Notifications (Practice Task No.1)
+─────────────────────────────────────────────────────────────
+Email notification: Configured ✓
+Slack notification: Configured ✓
+Events covered: Plan started, Plan errored, Run needs attention
+
+─────────────────────────────────────────────────────────────
+STEP 8 — Private Module Registry (Practice Task No.2)
+─────────────────────────────────────────────────────────────
+Module repo: https://github.com/Ngumonelson123/terraform-aws-s3-webapp
+Module in Private Registry: app.terraform.io/(YOUR_ORG)/s3-webapp/aws
+Version tagged: v1.0.0
+Module used in root config: Yes
+
+─────────────────────────────────────────────────────────────
+STEP 9 — Website Deployed
+─────────────────────────────────────────────────────────────
+S3 Website URL: http://(BUCKET_NAME).s3-website-us-east-1.amazonaws.com
+
+─────────────────────────────────────────────────────────────
+STEP 10 — Destroy
+─────────────────────────────────────────────────────────────
+Destroy run triggered from: Terraform Cloud Web Console
+Status: Successfully destroyed

@@ -1,0 +1,93 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_CREDS = credentials('dockerhub-credentials')
+        DOCKER_HUB_USERNAME = "${DOCKER_HUB_CREDS_USR}"
+        IMAGE_NAME = "tooling"
+        // Tag image with branch prefix e.g. feature-0.0.1 or main-0.0.1
+        IMAGE_TAG = "${BRANCH_NAME.replace('/', '-')}-${BUILD_NUMBER}"
+        FULL_IMAGE = "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo "Checking out branch: ${BRANCH_NAME}"
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('tooling-app') {
+                    sh """
+                        echo "Building Docker image: ${FULL_IMAGE}"
+                        docker build -t ${FULL_IMAGE} .
+                    """
+                }
+            }
+        }
+
+        stage('Test - HTTP 200 Check') {
+            steps {
+                sh """
+                    echo "Starting container for test..."
+                    docker run -d --name tooling_test -p 8090:80 ${FULL_IMAGE}
+                    sleep 5
+
+                    echo "Testing HTTP response from tooling site..."
+                    STATUS=\$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8090)
+                    echo "HTTP Status: \$STATUS"
+
+                    docker stop tooling_test
+                    docker rm tooling_test
+
+                    if [ "\$STATUS" != "200" ]; then
+                        echo "TEST FAILED: Expected 200 but got \$STATUS"
+                        exit 1
+                    fi
+                    echo "TEST PASSED: HTTP 200 received"
+                """
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                sh """
+                    echo "Logging in to Docker Hub..."
+                    echo "${DOCKER_HUB_CREDS_PSW}" | docker login -u "${DOCKER_HUB_CREDS_USR}" --password-stdin
+
+                    echo "Pushing image: ${FULL_IMAGE}"
+                    docker push ${FULL_IMAGE}
+                """
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh """
+                    echo "Removing local Docker images to free Jenkins disk space..."
+                    docker rmi ${FULL_IMAGE} || true
+                    docker image prune -f || true
+                    echo "Cleanup complete."
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline finished for branch: ${BRANCH_NAME}, build: ${BUILD_NUMBER}"
+            // Ensure test container is removed even on failure
+            sh "docker rm -f tooling_test 2>/dev/null || true"
+        }
+        success {
+            echo "SUCCESS: Image ${FULL_IMAGE} built, tested, and pushed."
+        }
+        failure {
+            echo "FAILURE: Pipeline failed. Check logs above."
+        }
+    }
+}

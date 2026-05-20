@@ -1,0 +1,52 @@
+services:
+  tooling_frontend:
+    build: .
+    ports:
+      - "5000:80"
+    volumes:
+      - tooling_frontend:/var/www/html
+    links:
+      - db
+    environment:
+      MYSQL_SERVER: mysqlserverhost
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASS: ${MYSQL_PASSWORD}
+      MYSQL_DBNAME: toolingdb
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - tooling_app_network
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: toolingdb
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - db:/var/lib/mysql
+      - ./scripts/tooling_db_schema.sql:/docker-entrypoint-initdb.d/tooling_db_schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      tooling_app_network:
+        aliases:
+          - mysqlserverhost
+
+volumes:
+  tooling_frontend:
+  db:
+
+networks:
+  tooling_app_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24

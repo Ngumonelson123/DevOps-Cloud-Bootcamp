@@ -1,0 +1,19 @@
+# Secrets - never commit these
+.env
+*.pem
+*.key
+create_user.sql
+
+# Docker
+.docker/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log

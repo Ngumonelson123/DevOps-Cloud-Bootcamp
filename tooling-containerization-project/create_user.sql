@@ -1,0 +1,6 @@
+CREATE USER 'nelson'@'%' IDENTIFIED BY 'Steghub@2026';
+
+
+GRANT ALL PRIVILEGES ON *.* TO 'nelson'@'%';
+
+FLUSH PRIVILEGES;

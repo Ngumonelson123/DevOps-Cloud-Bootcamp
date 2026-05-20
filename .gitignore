@@ -5,3 +5,5 @@ tfplan
 **/.terraform/
 **/ansible/
 terraform.tfvars
+tooling-containerization-project/tooling-02/
+tooling-containerization-project/tooling-containerization/php-todo/

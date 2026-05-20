@@ -7,3 +7,4 @@ tfplan
 terraform.tfvars
 tooling-containerization-project/tooling-02/
 tooling-containerization-project/tooling-containerization/php-todo/
+tooling-containerization-project/.env

@@ -1,0 +1,93 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_CREDS    = credentials('dockerhub-credentials')
+        DOCKER_HUB_USERNAME = "${DOCKER_HUB_CREDS_USR}"
+        IMAGE_NAME          = "php-todo"
+        IMAGE_TAG           = "${BRANCH_NAME.replace('/', '-')}-${BUILD_NUMBER}"
+        FULL_IMAGE          = "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo "Checking out branch: ${BRANCH_NAME}"
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('php-todo') {
+                    sh """
+                        echo "Building Docker image: ${FULL_IMAGE}"
+                        docker build -t ${FULL_IMAGE} .
+                    """
+                }
+            }
+        }
+
+        stage('Test - HTTP 200 Check') {
+            steps {
+                sh """
+                    echo "Starting container for HTTP test..."
+                    docker run -d --name php_todo_test -p 8091:80 \
+                        -e APP_ENV=testing \
+                        -e APP_KEY=base64:SomeRandomKeyForTestingOnly1234= \
+                        ${FULL_IMAGE}
+                    sleep 5
+
+                    STATUS=\$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8091)
+                    echo "HTTP Status returned: \$STATUS"
+
+                    docker stop php_todo_test
+                    docker rm php_todo_test
+
+                    if [ "\$STATUS" != "200" ]; then
+                        echo "TEST FAILED: Expected HTTP 200 but received \$STATUS"
+                        exit 1
+                    fi
+                    echo "TEST PASSED: HTTP 200 confirmed"
+                """
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                sh """
+                    echo "${DOCKER_HUB_CREDS_PSW}" | docker login -u "${DOCKER_HUB_CREDS_USR}" --password-stdin
+                    docker push ${FULL_IMAGE}
+                    echo "Image pushed: ${FULL_IMAGE}"
+                """
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh """
+                    echo "Removing local images from Jenkins server..."
+                    docker rmi ${FULL_IMAGE} || true
+                    docker image prune -f || true
+                    echo "Disk cleanup complete."
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            node('built-in') {
+                sh "docker rm -f php_todo_test 2>/dev/null || true"
+            }
+            echo "Pipeline complete — Branch: ${BRANCH_NAME}, Build: ${BUILD_NUMBER}"
+        }
+        success {
+            echo "SUCCESS: ${FULL_IMAGE} built, tested, and pushed successfully."
+        }
+        failure {
+            echo "FAILURE: Pipeline failed on branch ${BRANCH_NAME}. Review logs."
+        }
+    }
+}

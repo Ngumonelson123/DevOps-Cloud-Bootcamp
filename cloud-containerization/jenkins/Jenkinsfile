@@ -1,0 +1,105 @@
+pipeline {
+  agent any
+
+  environment {
+    DOCKER_REGISTRY    = "docker.io"
+    DOCKER_IMAGE       = "${env.DOCKER_HUB_USERNAME ?: 'your-dockerhub-username'}/tooling"
+    BRANCH_TAG         = "${env.BRANCH_NAME?.replace('/', '-') ?: 'latest'}"
+    DOCKER_IMAGE_TAG   = "${DOCKER_IMAGE}:${BRANCH_TAG}"
+    TEST_CONTAINER     = "tooling-test-${env.BUILD_NUMBER}"
+    TEST_PORT          = "8099"
+  }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+        echo "Checking out branch: ${env.BRANCH_NAME}"
+        checkout scm
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        echo "Building image: ${DOCKER_IMAGE_TAG}"
+        sh """
+          docker build -t ${DOCKER_IMAGE_TAG} ./tooling-app
+        """
+      }
+    }
+
+    stage('Test') {
+      steps {
+        echo "Running test container to verify HTTP endpoint returns 200..."
+        sh """
+          # Start the container for testing
+          docker run -d \
+            --name ${TEST_CONTAINER} \
+            -p ${TEST_PORT}:80 \
+            ${DOCKER_IMAGE_TAG}
+
+          # Wait for Apache to initialise
+          sleep 8
+
+          # Validate the HTTP endpoint
+          HTTP_STATUS=\$(curl -s -o /dev/null -w "%{http_code}" http://localhost:${TEST_PORT})
+          echo "HTTP Status: \$HTTP_STATUS"
+
+          if [ "\$HTTP_STATUS" != "200" ]; then
+            echo "TEST FAILED: Expected 200 but got \$HTTP_STATUS"
+            exit 1
+          fi
+
+          echo "TEST PASSED: HTTP 200 OK"
+        """
+      }
+      post {
+        always {
+          // Clean up the test container regardless of pass/fail
+          sh """
+            docker stop ${TEST_CONTAINER} || true
+            docker rm   ${TEST_CONTAINER} || true
+          """
+        }
+      }
+    }
+
+    stage('Push to Docker Hub') {
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'dockerhub-credentials',
+          usernameVariable: 'DOCKER_USER',
+          passwordVariable: 'DOCKER_PASS'
+        )]) {
+          sh """
+            echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
+            docker push ${DOCKER_IMAGE_TAG}
+            echo "Pushed: ${DOCKER_IMAGE_TAG}"
+          """
+        }
+      }
+    }
+
+    stage('Clean Up') {
+      steps {
+        echo "Removing local image and pruning dangling images on Jenkins server..."
+        sh """
+          docker rmi ${DOCKER_IMAGE_TAG} || true
+          docker image prune -f
+        """
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "Pipeline succeeded. Image ${DOCKER_IMAGE_TAG} is available on Docker Hub."
+    }
+    failure {
+      echo "Pipeline FAILED on branch ${env.BRANCH_NAME}. Check logs above."
+    }
+    always {
+      echo "Build #${env.BUILD_NUMBER} finished. Branch: ${env.BRANCH_NAME}"
+    }
+  }
+}

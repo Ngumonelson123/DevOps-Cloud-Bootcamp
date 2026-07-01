@@ -1,0 +1,21 @@
+# SSH private keys
+ssh/
+
+# Generated certificates (private keys and certs)
+configs/certificates/
+
+# Kubeconfig files (contain embedded certs and credentials)
+configs/kubeconfigs/
+
+# Network IDs (contain AWS resource IDs specific to a deployment)
+configs/network-ids.sh
+
+# Diagram generation script (optional — remove if you want to keep it)
+generate_diagram.py
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

@@ -15,7 +15,7 @@ managedNodeGroups:
     instanceType: t3.small
     desiredCapacity: 2
     minSize: 2
-    maxSize: 3
+    maxSize: 4
     volumeSize: 20
     availabilityZones:
       - us-east-1a

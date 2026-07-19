@@ -1,0 +1,65 @@
+Name:             nginx-manual-pv
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             ip-192-168-62-40.ec2.internal/192.168.62.40
+Start Time:       Sun, 19 Jul 2026 01:09:29 +0300
+Labels:           app=nginx-manual-pv
+Annotations:      <none>
+Status:           Pending
+IP:               
+IPs:              <none>
+Containers:
+  nginx:
+    Container ID:   
+    Image:          nginx:latest
+    Image ID:       
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /usr/share/nginx/html from nginx-storage (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8tvnk (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  nginx-storage:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  manual-ebs-pvc
+    ReadOnly:   false
+  kube-api-access-8tvnk:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason              Age                    From                     Message
+  ----     ------              ----                   ----                     -------
+  Normal   Scheduled           12m                    default-scheduler        Successfully assigned default/nginx-manual-pv to ip-192-168-62-40.ec2.internal
+  Warning  FailedAttachVolume  12m                    attachdetach-controller  AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: 9b0af25a-d990-45ea-9b5a-caaf6f4b7654, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+  Warning  FailedAttachVolume  12m                    attachdetach-controller  AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: 705243a5-242a-42c8-b9d4-cd6f8d3341a4, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+  Warning  FailedAttachVolume  12m                    attachdetach-controller  AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: 987a010d-1e32-482b-965b-f124c0d6eeb1, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+  Warning  FailedAttachVolume  12m (x2 over 12m)      attachdetach-controller  AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: 874e549b-9f8a-4080-b199-3fa5def2d6a9, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+  Warning  FailedAttachVolume  12m                    attachdetach-controller  AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: 1b78d9ec-cbe8-4fe0-b86a-1a53f7b2cacd, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+  Warning  FailedAttachVolume  12m                    attachdetach-controller  AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: 9f074570-c10e-4118-9d11-ad168ce5566d, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+  Warning  FailedAttachVolume  11m                    attachdetach-controller  AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: b8a10ab7-4b7f-4f7b-9b51-a6c6394d9532, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+  Warning  FailedAttachVolume  8m22s (x2 over 10m)    attachdetach-controller  AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: e6f55786-554f-4c7b-adbb-704ce49351b9, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+  Warning  FailedAttachVolume  4m16s (x2 over 6m19s)  attachdetach-controller  AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: 5116e889-1219-49ec-b088-cea314e3bf3c, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+  Warning  FailedAttachVolume  2m14s                  attachdetach-controller  (combined from similar events): AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: 1e2a62d1-ddd1-41ee-bc82-ba86c665ba2b, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+  Warning  FailedAttachVolume  11s                    attachdetach-controller  AttachVolume.Attach failed for volume "manual-ebs-pv" : rpc error: code = Internal desc = Could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": could not attach volume "vol-0c4252e67ec239a38" to node "i-0683a2da72b70a500": operation error EC2: AttachVolume, https response error StatusCode: 400, RequestID: 1e2a62d1-ddd1-41ee-bc82-ba86c665ba2b, api error InvalidVolume.ZoneMismatch: The volume 'vol-0c4252e67ec239a38' is not in the same availability zone as instance 'i-0683a2da72b70a500'
+NAME              READY   STATUS              RESTARTS   AGE   IP       NODE                            NOMINATED NODE   READINESS GATES
+nginx-manual-pv   0/1     ContainerCreating   0          12m   <none>   ip-192-168-62-40.ec2.internal   <none>           <none>

@@ -1,0 +1,98 @@
+2026-07-19 00:00:43 [ℹ]  eksctl version 0.210.0
+2026-07-19 00:00:43 [ℹ]  using region us-east-1
+2026-07-19 00:00:43 [ℹ]  subnets for us-east-1a - public:192.168.0.0/19 private:192.168.64.0/19
+2026-07-19 00:00:43 [ℹ]  subnets for us-east-1b - public:192.168.32.0/19 private:192.168.96.0/19
+2026-07-19 00:00:43 [ℹ]  nodegroup "standard-workers" will use "" [AmazonLinux2023/1.30]
+2026-07-19 00:00:43 [ℹ]  using Kubernetes version 1.30
+2026-07-19 00:00:43 [ℹ]  creating EKS cluster "steghub-persist-eks" in "us-east-1" region with managed nodes
+2026-07-19 00:00:43 [ℹ]  1 nodegroup (standard-workers) was included (based on the include/exclude rules)
+2026-07-19 00:00:43 [ℹ]  will create a CloudFormation stack for cluster itself and 1 managed nodegroup stack(s)
+2026-07-19 00:00:43 [ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=us-east-1 --cluster=steghub-persist-eks'
+2026-07-19 00:00:43 [ℹ]  Kubernetes API endpoint access will use default of {publicAccess=true, privateAccess=false} for cluster "steghub-persist-eks" in "us-east-1"
+2026-07-19 00:00:43 [ℹ]  CloudWatch logging will not be enabled for cluster "steghub-persist-eks" in "us-east-1"
+2026-07-19 00:00:43 [ℹ]  you can enable it with 'eksctl utils update-cluster-logging --enable-types={SPECIFY-YOUR-LOG-TYPES-HERE (e.g. all)} --region=us-east-1 --cluster=steghub-persist-eks'
+2026-07-19 00:00:43 [ℹ]  default addons vpc-cni, kube-proxy, coredns, metrics-server were not specified, will install them as EKS addons
+2026-07-19 00:00:43 [ℹ]  
+2 sequential tasks: { create cluster control plane "steghub-persist-eks", 
+    2 sequential sub-tasks: { 
+        2 sequential sub-tasks: { 
+            1 task: { create addons },
+            wait for control plane to become ready,
+        },
+        create managed nodegroup "standard-workers",
+    } 
+}
+2026-07-19 00:00:43 [ℹ]  building cluster stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:00:45 [ℹ]  deploying stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:01:15 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:01:46 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:02:46 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:03:47 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:04:48 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:05:49 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:06:50 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:07:51 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:08:51 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:09:54 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-cluster"
+2026-07-19 00:09:59 [!]  recommended policies were found for "vpc-cni" addon, but since OIDC is disabled on the cluster, eksctl cannot configure the requested permissions; the recommended way to provide IAM permissions for "vpc-cni" addon is via pod identity associations; after addon creation is completed, add all recommended policies to the config file, under `addon.PodIdentityAssociations`, and run `eksctl update addon`
+2026-07-19 00:09:59 [ℹ]  creating addon: vpc-cni
+2026-07-19 00:09:59 [ℹ]  successfully created addon: vpc-cni
+2026-07-19 00:10:00 [ℹ]  creating addon: kube-proxy
+2026-07-19 00:10:00 [ℹ]  successfully created addon: kube-proxy
+2026-07-19 00:10:01 [ℹ]  creating addon: coredns
+2026-07-19 00:10:02 [ℹ]  successfully created addon: coredns
+2026-07-19 00:10:03 [ℹ]  creating addon: metrics-server
+2026-07-19 00:10:03 [ℹ]  successfully created addon: metrics-server
+2026-07-19 00:12:08 [ℹ]  building managed nodegroup stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:12:10 [ℹ]  deploying stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:12:10 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:12:41 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:13:38 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:15:38 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:16:14 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:17:56 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:19:44 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:20:30 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:22:23 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:23:13 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:25:13 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:27:11 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:28:40 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:30:31 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:31:09 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:31:53 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:32:29 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:33:56 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:35:05 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:35:51 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:36:41 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:36:41 [!]  1 error(s) occurred and cluster hasn't been created properly, you may wish to check CloudFormation console
+2026-07-19 00:36:41 [ℹ]  to cleanup resources, run 'eksctl delete cluster --region=us-east-1 --name=steghub-persist-eks'
+2026-07-19 00:36:41 [✖]  exceeded max wait time for StackCreateComplete waiter
+Error: failed to create cluster "steghub-persist-eks"
+2026-07-19 00:47:34 [ℹ]  nodegroup "standard-workers" will use "" [AmazonLinux2023/1.30]
+2026-07-19 00:47:37 [ℹ]  1 nodegroup (standard-workers) was included (based on the include/exclude rules)
+2026-07-19 00:47:37 [ℹ]  will create a CloudFormation stack for each of 1 managed nodegroups in cluster "steghub-persist-eks"
+2026-07-19 00:47:37 [ℹ]  
+2 sequential tasks: { fix cluster compatibility, 1 task: { 1 task: { create managed nodegroup "standard-workers" } } 
+}
+2026-07-19 00:47:37 [ℹ]  checking cluster stack for missing resources
+2026-07-19 00:47:38 [ℹ]  cluster stack has all required resources
+2026-07-19 00:47:39 [ℹ]  building managed nodegroup stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:47:40 [ℹ]  deploying stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:47:40 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:48:11 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:49:06 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:50:24 [ℹ]  waiting for CloudFormation stack "eksctl-steghub-persist-eks-nodegroup-standard-workers"
+2026-07-19 00:50:25 [ℹ]  no tasks
+2026-07-19 00:50:25 [✔]  created 0 nodegroup(s) in cluster "steghub-persist-eks"
+2026-07-19 00:50:26 [ℹ]  nodegroup "standard-workers" has 2 node(s)
+2026-07-19 00:50:26 [ℹ]  node "ip-192-168-1-133.ec2.internal" is ready
+2026-07-19 00:50:26 [ℹ]  node "ip-192-168-62-40.ec2.internal" is ready
+2026-07-19 00:50:26 [ℹ]  waiting for at least 2 node(s) to become ready in "standard-workers"
+2026-07-19 00:50:26 [ℹ]  nodegroup "standard-workers" has 2 node(s)
+2026-07-19 00:50:26 [ℹ]  node "ip-192-168-1-133.ec2.internal" is ready
+2026-07-19 00:50:26 [ℹ]  node "ip-192-168-62-40.ec2.internal" is ready
+2026-07-19 00:50:26 [✔]  created 1 managed nodegroup(s) in cluster "steghub-persist-eks"
+2026-07-19 00:50:27 [ℹ]  checking security group configuration for all nodegroups
+2026-07-19 00:50:27 [ℹ]  all nodegroups have up-to-date cloudformation templates

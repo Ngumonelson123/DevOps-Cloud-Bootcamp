@@ -1,0 +1,16 @@
+NAME                                  PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+storageclass.storage.k8s.io/ebs-gp3   ebs.csi.aws.com         Delete          WaitForFirstConsumer   true                   14m
+storageclass.storage.k8s.io/gp2       kubernetes.io/aws-ebs   Delete          WaitForFirstConsumer   false                  90m
+
+NAME                                                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                        STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE     VOLUMEMODE
+persistentvolume/pvc-5f23e243-da9f-4425-9d42-320ffe59df0a   5Gi        RWO            Delete           Bound    default/mysql-data-mysql-0   ebs-gp3        <unset>                          9m38s   Filesystem
+
+NAME                                       STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE     VOLUMEMODE
+persistentvolumeclaim/mysql-data-mysql-0   Bound    pvc-5f23e243-da9f-4425-9d42-320ffe59df0a   5Gi        RWO            ebs-gp3        <unset>                 9m40s   Filesystem
+
+NAME          READY   STATUS    RESTARTS   AGE   IP              NODE                            NOMINATED NODE   READINESS GATES
+pod/mysql-0   1/1     Running   0          87s   192.168.21.77   ip-192-168-1-133.ec2.internal   <none>           <none>
+
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/kubernetes   ClusterIP   10.100.0.1   <none>        443/TCP    90m   <none>
+service/mysql-h      ClusterIP   None         <none>        3306/TCP   14m   app=mysql

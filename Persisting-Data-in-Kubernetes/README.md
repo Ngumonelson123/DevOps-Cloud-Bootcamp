@@ -32,7 +32,8 @@ Persisting-Data-in-Kubernetes/
 │   └── 06-mysql-client-test.yaml       # Throwaway client Pod, kept for ad-hoc testing
 └── screenshots/
     ├── static-pv-az-mismatch-evidence.txt   # kubectl describe output proving the AZ limitation
-    └── final-cluster-state.txt              # kubectl get sc,pv,pvc,pods,svc after everything worked
+    ├── final-cluster-state.txt              # kubectl get sc,pv,pvc,pods,svc after everything worked
+    └── *.png                                # screenshots referenced inline below
 ```
 
 ---
@@ -59,11 +60,20 @@ rather than hidden.
 > and recreating with `t3.small`, which *is* free-tier eligible on this
 > account. `eks-cluster.yaml` now reflects the working value.
 
+![eksctl get nodegroup showing the t3.medium → t3.small fix](screenshots/01-nodegroup-instance-type-fix.png)
+*`eksctl get nodegroup` history: `standard-workers` stuck `CREATING` on `t3.medium`, then `ACTIVE` on `t3.small` after the fix.*
+
 Verify:
 
 ```bash
 kubectl get nodes -o wide
 ```
+
+![Two t3.small worker nodes running, one per AZ](screenshots/02-ec2-nodes-running.png)
+*EC2 console: both nodes `Running`, `t3.small`, split across `us-east-1a` and `us-east-1b`.*
+
+![Managed nodegroup ASG at desired capacity](screenshots/03-asg-healthy.png)
+*The managed nodegroup's Auto Scaling group at "At desired capacity", 2/2 healthy.*
 
 ## 2. Install the EBS CSI driver
 
@@ -75,6 +85,9 @@ EC2 API on your behalf.
 cd scripts && ./install-ebs-csi-driver.sh
 ```
 
+![EBS CSI controller and node pods Running, addon ACTIVE](screenshots/04-ebs-csi-driver-active.png)
+*`kube-system` pods showing `ebs-csi-controller`/`ebs-csi-node` Running, and `aws eks describe-addon` reporting the addon `ACTIVE`.*
+
 ## 3. Static/manual provisioning — and its limitation
 
 Manually create an EBS volume and wire it to a Pod via a hand-written PV/PVC:
@@ -84,6 +97,9 @@ cd scripts && ./create-manual-ebs-volume.sh   # patches manifests/01-... with th
 kubectl apply -f manifests/01-manual-pv-pvc-pod.yaml
 kubectl get pod nginx-manual-pv -o wide
 ```
+
+![Manual PV, PVC bound, Pod ContainerCreating](screenshots/05-manual-pv-pvc-created.png)
+*PV and PVC bind immediately (`manual-ebs-pv` / `manual-ebs-pvc`), but the Pod sits in `ContainerCreating`.*
 
 **The limitation, reproduced for real:** the volume was created in
 `us-east-1a`, but the scheduler — with no AZ awareness baked into a
@@ -97,6 +113,9 @@ as instance 'i-0683a2da72b70a500'
 ```
 
 (Full output saved in `screenshots/static-pv-az-mismatch-evidence.txt`.)
+
+![kubectl describe pod showing FailedAttachVolume ZoneMismatch](screenshots/06-az-mismatch-evidence.png)
+*`kubectl describe pod nginx-manual-pv`: repeated `FailedAttachVolume` / `InvalidVolume.ZoneMismatch` events.*
 
 This is exactly why manually managing PVs doesn't scale, and why dynamic
 provisioning with `volumeBindingMode: WaitForFirstConsumer` (see
@@ -124,6 +143,9 @@ Each StatefulSet replica gets its own PVC from `volumeClaimTemplates`
 whichever AZ the Pod actually landed in — no manual volume creation, no
 AZ mismatch.
 
+![First StatefulSet deploy: PVC bound, Pod Running but with a restart](screenshots/07-mysql-first-deploy-broken.png)
+*First deploy looked fine at a glance (`mysql-0` `1/1 Running`) — except `RESTARTS 1`, the tell that something crashed during init. This is the broken-password state described below.*
+
 > **Hit and fixed during this build:** the first version of
 > `manifests/02-mysql-configmap.yaml` mounted two files into
 > `/etc/mysql/conf.d/` — a leftover `primary.cnf`/`replica.cnf` pair from a
@@ -135,6 +157,15 @@ AZ mismatch.
 > collapsing the ConfigMap to a single `mysql.cnf` with no conflicting
 > flags, then deleting the StatefulSet **and** its PVC (the volume had
 > already initialized in the broken state) and redeploying clean.
+
+![Redeployed StatefulSet: PVC bound to a fresh volume, Pod Running with zero restarts](screenshots/08-mysql-redeploy-fixed.png)
+*After fixing the ConfigMap and redeploying against a fresh PVC (`pvc-5f23e243-...`): `mysql-0` `1/1 Running`, `RESTARTS 0`.*
+
+![Final cluster state: StorageClass, PV, PVC, Pod, and headless Service](screenshots/09-final-cluster-state.png)
+*`kubectl get sc,pv,pvc,pods,svc` — the whole stack in its steady state.*
+
+![EBS Volumes console showing the two node root volumes plus the dynamically-provisioned PVC volume](screenshots/10-ebs-volumes-console.png)
+*AWS console cross-check: two 20 GiB node root volumes, plus the 5 GiB `steghub-persist-eks-dynamic-pvc-...` volume the EBS CSI driver created for the StatefulSet — no manual volume creation involved.*
 
 ## 5. Proof: data survives a Pod restart
 
@@ -155,6 +186,9 @@ kubectl get pvc mysql-data-mysql-0 -o jsonpath='{.spec.volumeName}'   # same PV 
 
 kubectl exec mysql-0 -- mysql -uroot -p"${ROOT_PW}" -e "SELECT * FROM steghub.t;"
 ```
+
+![Terminal proof: same rows returned before and after deleting and recreating the Pod](screenshots/11-persistence-proof.png)
+*Same `SELECT * FROM steghub.t` output before and after `kubectl delete pod mysql-0` — the StatefulSet recreated the Pod, the PVC/PV never moved, and the data is untouched.*
 
 **Result:** the PVC (`mysql-data-mysql-0`) stayed bound to the exact same PV
 (`pvc-5f23e243-...`) before and after the Pod was deleted, and the `SELECT`
